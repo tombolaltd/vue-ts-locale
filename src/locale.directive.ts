@@ -187,7 +187,8 @@ function install(Vue: any, options: any) {
     formatTime,
     formatRelative,
     formatNumber,
-    formatMessage
+    formatMessage,
+    formatCurrency
   };
 
   each(helpers, function(helper, name) {

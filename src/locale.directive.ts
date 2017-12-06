@@ -1,6 +1,6 @@
 import * as Vue from "vue";
 
-import {isObject, isString, isNumber, isDate, each } from "underscore";
+import { isObject, isString, isNumber, isDate, each } from "underscore";
 
 const MessageFormat = require("intl-messageformat");
 const RelativeFormat = require("intl-relativeformat");
@@ -16,18 +16,18 @@ if (isNode) {
 
 const clamp = function(number, min, max) {
   return Math.min(Math.max(number, min), max);
-}
+};
 
-const kebabCase = function(string){
+const kebabCase = function(string) {
   let result = string;
   result = result.replace(/([a-z][A-Z])/g, function(match) {
-    return match.substr(0, 1) + '-' + match.substr(1, 1).toLowerCase();
+    return match.substr(0, 1) + "-" + match.substr(1, 1).toLowerCase();
   });
   result = result.toLowerCase();
-  result = result.replace(/[^-a-z0-9]+/g, '-');
-  result = result.replace(/^-+/, '').replace(/-$/, '');
+  result = result.replace(/[^-a-z0-9]+/g, "-");
+  result = result.replace(/^-+/, "").replace(/-$/, "");
   return result;
-}
+};
 
 const formats = MessageFormat.formats;
 
@@ -52,6 +52,9 @@ export let formatNumber: any;
 export let formatRelative: any;
 export let formatMessage: any;
 export let formatCurrency: any;
+export let formatCurrencyPrecise: any;
+export let formatPercent: any;
+export let formatNumberToPrecision: any;
 
 function install(Vue: any, options: any) {
   let { language, currency, messages } = options;
@@ -69,7 +72,7 @@ function install(Vue: any, options: any) {
         currency = options.currency;
         messages = options.messages;
         locale = language;
-        
+
         if (reloadLocation) window.location.reload(true);
     };
 
@@ -149,6 +152,26 @@ function install(Vue: any, options: any) {
     return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, numberOptions);
   };
 
+  formatCurrencyPrecise = function(val: any) {
+    return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, "currency");
+  };
+
+  formatPercent = function(val: any, fractionDigits: any) {
+    return formatNumber(val == undefined || val === "" ? 0 : clamp(val / 100, 0, 1),
+    {
+      style: "percent",
+      minimumFractionDigits: fractionDigits == undefined ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits == undefined ? maximumFractionDigits : fractionDigits
+    });
+  };
+
+  formatNumberToPrecision = function (val: any, fractionDigits: any) {
+    return val == undefined || val === "" ? 0 : formatNumber(val,
+    {
+      minimumFractionDigits: fractionDigits == undefined ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits == undefined ? maximumFractionDigits : fractionDigits
+    });
+  };
 
   // =============================================
   //   PARSERS
@@ -177,7 +200,6 @@ function install(Vue: any, options: any) {
     return splits[0];
   }
 
-
   // =============================================
   //   REGISTER FILTERS
   // =============================================
@@ -188,7 +210,10 @@ function install(Vue: any, options: any) {
     formatRelative,
     formatNumber,
     formatMessage,
-    formatCurrency
+    formatCurrency,
+    formatCurrencyPrecise,
+    formatPercent,
+    formatNumberToPrecision
   };
 
   each(helpers, function(helper, name) {
@@ -197,76 +222,6 @@ function install(Vue: any, options: any) {
 
     // Support alternative full blown calling of methods with real options object
     Vue.prototype["$" + name] = helper;
-  });
-
-  // =============================================
-  //   ADDITIONAL FILTERS
-  // =============================================
-
-  // Vue.filter("format-currency", {
-  //   // model -> view: formats the value when updating the input element.
-  //   read: function(val: any) {
-  //     let numberOptions = {
-  //       style: "currency",
-  //       currency: currency,
-  //       minimumFractionDigits: 0,
-  //       maximumFractionDigits: 0
-  //     };
-
-  //     return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, numberOptions);
-  //   },
-
-  //   // view -> model: formats the value when writing to the data.
-  //   write: function(val: any) {
-  //     return parseToNumber(val);
-  //   }
-  // });
-
-  Vue.filter("format-currency-precise", {
-    // model -> view: formats the value when updating the input element.
-    read: function(val: any) {
-      return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, "currency");
-    },
-
-    // view -> model: formats the value when writing to the data.
-    write: function(val: any) {
-      return parseToNumber(val);
-    }
-  });
-
-  Vue.filter("format-percent", {
-    // model -> view: formats the value when updating the input element.
-    read: function(val: any, fractionDigits: any)
-    {
-      return formatNumber(val == undefined || val === "" ? 0 : clamp(val / 100, 0, 1),
-      {
-        style: "percent",
-        minimumFractionDigits: fractionDigits == undefined ? 0 : fractionDigits,
-        maximumFractionDigits: fractionDigits == undefined ? maximumFractionDigits : fractionDigits
-      });
-    },
-
-    // view -> model: formats the value when writing to the data.
-    write: function(val: any) {
-      return parseToNumber(val);
-    }
-  });
-
-  Vue.filter("format-number", {
-    // model -> view: formats the value when updating the input element.
-    read: function(val: any, fractionDigits: any)
-    {
-      return val == undefined || val === "" ? 0 : formatNumber(val,
-      {
-        minimumFractionDigits: fractionDigits == undefined ? 0 : fractionDigits,
-        maximumFractionDigits: fractionDigits == undefined ? maximumFractionDigits : fractionDigits
-      });
-    },
-
-    // view -> model: formats the value when writing to the data.
-    write: function(val: any) {
-      return parseToNumber(val);
-    }
   });
 }
 

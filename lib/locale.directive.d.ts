@@ -5,6 +5,7 @@ export declare let formatTime: any;
 export declare let formatNumber: any;
 export declare let formatRelative: any;
 export declare let formatMessage: any;
+export declare let formatCurrency: any;
 declare const _default: {
     install: (Vue: any, options: any) => void;
 };

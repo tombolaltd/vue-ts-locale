@@ -51,6 +51,7 @@ export let formatTime: any;
 export let formatNumber: any;
 export let formatRelative: any;
 export let formatMessage: any;
+export let formatCurrency: any;
 
 function install(Vue: any, options: any) {
   let { language, currency, messages } = options;
@@ -137,6 +138,16 @@ function install(Vue: any, options: any) {
     return message.format(formatOptions);
   };
 
+  formatCurrency = function(val: any) {
+    let numberOptions = {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    };
+
+    return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, numberOptions);
+  };
 
 
   // =============================================
@@ -191,24 +202,24 @@ function install(Vue: any, options: any) {
   //   ADDITIONAL FILTERS
   // =============================================
 
-  Vue.filter("format-currency", {
-    // model -> view: formats the value when updating the input element.
-    read: function(val: any) {
-      let numberOptions = {
-        style: "currency",
-        currency: currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      };
+  // Vue.filter("format-currency", {
+  //   // model -> view: formats the value when updating the input element.
+  //   read: function(val: any) {
+  //     let numberOptions = {
+  //       style: "currency",
+  //       currency: currency,
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     };
 
-      return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, numberOptions);
-    },
+  //     return formatNumber(val == undefined || val === "" || isNaN(val) ? 0 : val, numberOptions);
+  //   },
 
-    // view -> model: formats the value when writing to the data.
-    write: function(val: any) {
-      return parseToNumber(val);
-    }
-  });
+  //   // view -> model: formats the value when writing to the data.
+  //   write: function(val: any) {
+  //     return parseToNumber(val);
+  //   }
+  // });
 
   Vue.filter("format-currency-precise", {
     // model -> view: formats the value when updating the input element.

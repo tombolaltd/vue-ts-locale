@@ -1,6 +1,6 @@
 {
   "name": "vue-ts-locale",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Advanced typescript localization support for VueJS",
   "keywords": [
     "vuejs",
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/tombolaltd/vue-ts-locale",
   "dependencies": {
-    "intl": "^1.2.5",
-    "intl-format-cache": "^2.0.5",
-    "intl-messageformat": "^1.3.0",
-    "intl-relativeformat": "^1.3.0",
+    "intl": "1.2.5",
+    "intl-format-cache": "2.1.0",
+    "intl-messageformat": "1.3.0",
+    "intl-relativeformat": "1.3.0",
     "underscore": "^1.8.3",
     "vue": "^2.2.6"
   },
